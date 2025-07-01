@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Language Translator</title>
+    <title>Language Translator</title>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -117,7 +117,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cosmic Language Translator</h1>
+        <h1>Language Translator</h1>
         <img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" alt="Microphone Icon" class="icon"/>
         <textarea id="textInput" placeholder="Enter text here..."></textarea>
         <div class="language-select">
@@ -128,7 +128,6 @@
                 <option value="de">German</option>
                 <option value="it">Italian</option>
                 <option value="ta">Tamil</option> <!-- Added Tamil -->
-                <!-- Add more options as needed -->
             </select>
             <span style="color: #6a0dad; font-weight: bold;">to</span>
             <select id="toLang">
@@ -138,7 +137,6 @@
                 <option value="en">English</option>
                 <option value="it">Italian</option>
                 <option value="ta">Tamil</option> <!-- Added Tamil -->
-                <!-- Add more options as needed -->
             </select>
         </div>
         <button onclick="translateText()">Translate</button>
@@ -155,23 +153,22 @@
                 return;
             }
 
-            fetch("https://libretranslate.de/translate", {
-                method: "POST",
-                body: JSON.stringify({
-                    q: text,
-                    source: from,
-                    target: to,
-                    format: "text"
-                }),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("output").innerText = data.translatedText;
-            })
-            .catch(error => {
-                document.getElementById("output").innerText = "Error: " + error.message;
-            });
+            // Construct the URL for the Google Translate API
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+
+            // Fetch the translation
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data[0] && data[0][0] && data[0][0][0]) {
+                        document.getElementById("output").innerText = data[0][0][0];
+                    } else {
+                        document.getElementById("output").innerText = "Translation error.";
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("output").innerText = "Error: " + error.message;
+                });
         }
     </script>
 </body>
